@@ -1,0 +1,11 @@
+#ignore temporary files
+/tmp/*
+
+#remove any compiled code
+*.pyc
+
+#remove any mp3 sound files
+*.mp3
+
+*.commands
+*.zip
