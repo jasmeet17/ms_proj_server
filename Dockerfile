@@ -29,8 +29,8 @@ RUN pip install -r /requirements.txt
 EXPOSE 5000
 
 # run CMD based on flags for development
-CMD sh -c 'if [ "$LIBROSA_TEST"=true ]; then python3 $APP_NAME; fi'
-# CMD sh -c 'if [ "$API_TEST"=true ]; then export FLASK_DEBUG=1; fi'
+#CMD sh -c 'if [ "$LIBROSA_TEST"=true ]; then python3 $APP_NAME; fi'
+CMD sh -c 'if [ "$API_TEST"=true ]; then export FLASK_DEBUG=1; fi'
 CMD sh -c 'if [ "$API_TEST"=true ]; then python3 $APP_NAME; fi'
 
 

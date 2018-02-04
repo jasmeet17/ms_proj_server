@@ -4,8 +4,12 @@
 #remove any compiled code
 *.pyc
 
-#remove any mp3 sound files
+#remove any sound files
 *.mp3
+*.flac
 
 *.commands
 *.zip
+*.csv
+*.json
+*.png
