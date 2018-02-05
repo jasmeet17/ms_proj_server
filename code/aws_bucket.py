@@ -2,12 +2,15 @@ import boto3
 import botocore
 import csv
 import json
+import logging
 
 CRED_FILE = 'credentials.json'
 BUCKET = 'accent-audio-files'
-AUDIO_FOLDER = 'audio_file/'
+AUDIO_FOLDER = 'audio_files/'
 TEMP_FOLDER = 'static/tmp/'
+LOG_FOLDER = 'static/logs/'
 
+import sys
 
 class AwsBucket(object):
     """AwsBucket makes connection with the AWS for S3 object"""
@@ -54,17 +57,20 @@ class AwsBucket(object):
             return downloaded
 
         try:
-            self.__my_bucket.download_file(AUDIO_FOLDER + key, '/static/tmp/' + key)
+            self.__my_bucket.download_file(AUDIO_FOLDER + key, TEMP_FOLDER + key)
             downloaded = True
         except botocore.exceptions.ClientError as e:
             downloaded = False
             if e.response['Error']['Code'] == "NoSuchKey":
-                print("The object does not exist.")
+                # logger.debug("The object does not exist. e:" + e)
+                pass
             else:
-                print(e.response['Error'])
-                return downloaded
+                pass
+                # logger.debug(e.response['Error'])
+                # return downloaded
+            return e
 
         return downloaded
 
-if __name__ == '__main__':
-    aws_bucket = AwsBucket()
+# if __name__ == '__main__':
+#     aws_bucket = AwsBucket()

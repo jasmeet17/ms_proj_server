@@ -1,5 +1,6 @@
 #ignore temporary files
 /tmp/*
+/logs/*
 
 #remove any compiled code
 *.pyc
