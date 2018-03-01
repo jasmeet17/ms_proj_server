@@ -1,6 +1,7 @@
 #ignore temporary files
 /tmp/*
 /logs/*
+/static*
 
 #remove any compiled code
 *.pyc
@@ -8,7 +9,7 @@
 #remove any sound files
 *.mp3
 *.flac
-
+*.xlsx
 *.commands
 *.zip
 *.csv
