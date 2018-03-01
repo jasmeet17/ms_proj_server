@@ -24,7 +24,8 @@ dtw = differentiate.DTW()
 
 TEMP_FOLDER = 'static/tmp'
 LOG_FOLDER = 'static/logs/'
-ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','mp3'])
+AUDIO_EXCEL_FILE = 'audio_files_list.xlsx'
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','mp3','xlsx'])
 
 app = Flask(__name__)
 app.debug = True
@@ -51,8 +52,13 @@ def not_found(error):
 
 @app.route('/')
 def index():
-    # logs.Logs.printLogs()
-    return "In Progress."
+    response = REQUEST_SUCCESS
+    if not fileExists(TEMP_FOLDER, AUDIO_EXCEL_FILE):
+        aws = aws_bucket.AwsBucket()        
+        if not aws.downloadFile(AUDIO_EXCEL_FILE):
+            response = REQUEST_FAIL
+            response['error'] = 'Unable to download file from Server.'
+    return jsonify(response)
 
 @app.route('/upload',methods=['PUT'])
 def upload():
@@ -96,6 +102,12 @@ def saveUploadedFile(up_file, filename):
         saved_status = False
     return saved_status
 
+def downloadAudioFileList():
+    pass
+
+def fileExists(folder, fileName):
+    exists = os.path.exists(request.host_url + folder +'/' + fileName)
+    return exists
 
 if __name__ == '__main__':
     # app.run(debug=True)

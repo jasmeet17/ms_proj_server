@@ -38,3 +38,4 @@ CMD sh -c 'if [ "$API_TEST"=true ]; then python3 $APP_NAME; fi'
 #docker run --rm -e API_TEST=true -e APP_NAME=app.py -v $(pwd)/code:/data/:rw python-sound-test
 #docker run -id -p 5000:5000 -e API_TEST=true -e APP_NAME=app.py -v $(pwd)/code:/data/:rw --name test_py python-sound
 #docker run -p 5000:5000 -e API_TEST=true -e APP_NAME=app.py -v $(pwd)/code:/data/:rw --name test_py python-sound
+#docker stop test_py && docker rm test_py

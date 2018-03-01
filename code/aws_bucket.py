@@ -31,15 +31,15 @@ class AwsBucket(object):
         self.__s3 = boto3.resource('s3', aws_access_key_id=ACCESS_KEY, aws_secret_access_key=SECRET_KEY)
         self.__my_bucket = self.__s3.Bucket(BUCKET)
 
-    """returns file(.flac - audio file ) from the bucket else returns False"""
+    """returns file(.flac or other file ) from the bucket else returns False"""
     def getFile(self, key):
         if key.strip() == '':
             return False
 
-        audio_file = ''
+        temp_file = ''
 
         try:
-            audio_file = self.__s3.Object(BUCKET, AUDIO_FOLDER + Key).get()['Body'].read()
+            temp_file = self.__s3.Object(BUCKET, AUDIO_FOLDER + key).get()['Body'].read()
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == "NoSuchKey":
                 print("The object does not exist.")
@@ -47,7 +47,7 @@ class AwsBucket(object):
                 print(e.response['Error'])
                 return False
 
-        return audio_file
+        return temp_file
 
     """Saved the requested file and return True for successful save."""
     def downloadFile(self, key):
