@@ -10,6 +10,8 @@ AUDIO_FOLDER = 'audio_files/'
 TEMP_FOLDER = 'static/tmp/'
 LOG_FOLDER = 'static/logs/'
 
+AUDIO_EXTENSIONS = ".flac"
+
 import sys
 
 class AwsBucket(object):
@@ -55,7 +57,6 @@ class AwsBucket(object):
 
         if key.strip()=='':
             return downloaded
-
         try:
             self.__my_bucket.download_file(AUDIO_FOLDER + key, TEMP_FOLDER + key)
             downloaded = True

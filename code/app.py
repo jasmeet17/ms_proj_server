@@ -27,6 +27,9 @@ LOG_FOLDER = 'static/logs/'
 AUDIO_EXCEL_FILE = 'audio_files_list.xlsx'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif','mp3','xlsx'])
 
+AUDIO_EXTENSION = 'flac'
+INPUT_AUDIO_EXT = 'm4a'
+
 app = Flask(__name__)
 app.debug = True
 app.config['UPLOAD_FOLDER'] = TEMP_FOLDER
@@ -62,10 +65,9 @@ def index():
 
 @app.route('/upload',methods=['PUT'])
 def upload():
-    # file = request.files['file_image']
-    # newFile = FileContents(name=file.filename, date=file.read())
     aws = aws_bucket.AwsBucket()
     response = {}
+
     if not request.files:
         response = REQUEST_FAIL
         response['error'] = "Audio file not found."
@@ -76,15 +78,15 @@ def upload():
         if not saveUploadedFile(up_file, upload_filename):
             response = REQUEST_FAIL
             response['error'] = 'Upload fail.'
-        elif not aws.downloadFile(filename):
+        elif not aws.downloadFile(filename.replace(INPUT_AUDIO_EXT,AUDIO_EXTENSION)):
             response = REQUEST_FAIL
             response['error'] = 'Unable to download file from Server.'
-        elif not dtw.differntiateFile(filename, upload_filename):
+        elif not dtw.differntiateFile(filename.replace(INPUT_AUDIO_EXT,AUDIO_EXTENSION), upload_filename):
             response = REQUEST_FAIL
             response['error'] = 'Unable to compare at the moment.'
         else:
             response = REQUEST_SUCCESS
-            fig_image = upload_filename.replace('.flac','')
+            fig_image = upload_filename.replace('.'+INPUT_AUDIO_EXT,'')
             response['image_url'] = request.host_url + TEMP_FOLDER +'/' + fig_image +'.png'
 
     return jsonify(response)

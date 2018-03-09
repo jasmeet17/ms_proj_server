@@ -1,3 +1,5 @@
 flask
 matplotlib
 boto3
+# cffi
+# pysoundfile

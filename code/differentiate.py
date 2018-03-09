@@ -4,8 +4,13 @@ import numpy as np
 import librosa
 import librosa.display
 import matplotlib.pyplot as plt
+import sys
 
 TEMP_FOLDER = 'static/tmp/'
+EXTENSION_IMAGES ='png'
+
+arg_real_file = 'ability.flac'
+arg_user_input_file = 'ability.flac'
 
 class DTW(object):
 
@@ -14,15 +19,16 @@ class DTW(object):
         super(DTW, self).__init__()
 
     """Differntiate 2 flac(audio) files"""
-    def differntiateFile(self, real_file='ability.flac', user_file='ability.flac'):
+    def differntiateFile(self, real_file=arg_real_file, user_input_file=arg_user_input_file, input_file_format="flac"):
         y, sr = librosa.load(TEMP_FOLDER + real_file)
         sound_1 = librosa.feature.mfcc(y=y, sr=sr)
 
-        y, sr = librosa.load(TEMP_FOLDER + user_file)
+
+        y, sr = librosa.load(TEMP_FOLDER + user_input_file)# + "." + input_file_format)
         sound_2 = librosa.feature.mfcc(y=y, sr=sr)
 
-        fig_name = user_file.replace('.flac','')
-        return self.plotAndSave(sound_1, sound_2, fig_name,'png')
+        fig_name = user_input_file.split(".")[0]
+        return self.plotAndSave(sound_1, sound_2, fig_name, EXTENSION_IMAGES)
 
     """Plot the difference between two sounds and save image showing comparison, return True if succssedful"""
     def plotAndSave(self, Y,Z,fig_name="compare", extension="png"):
@@ -53,5 +59,8 @@ class DTW(object):
 
 if __name__ == '__main__':
     dtw = DTW()
+    if len(sys.argv)==3:
+        arg_real_file = sys.argv[1]
+        arg_user_input_file = sys.argv[2]
     dtw.differntiateFile()
 
