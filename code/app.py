@@ -15,12 +15,11 @@ import differentiate
 import aws_bucket
 # import logs
 
-
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
+CORS(app)
 dtw = differentiate.DTW()
-
-
 
 TEMP_FOLDER = 'static/tmp'
 LOG_FOLDER = 'static/logs/'
@@ -31,6 +30,7 @@ AUDIO_EXTENSION = 'flac'
 INPUT_AUDIO_EXT = 'm4a'
 
 app = Flask(__name__)
+# CORS(app, support_credentials=True)
 app.debug = True
 app.config['UPLOAD_FOLDER'] = TEMP_FOLDER
 file_handler = FileHandler(LOG_FOLDER +'error-log.log')
@@ -64,6 +64,7 @@ def index():
     return jsonify(response)
 
 @app.route('/upload',methods=['PUT'])
+@cross_origin(origin='*')
 def upload():
     aws = aws_bucket.AwsBucket()
     response = {}
@@ -74,6 +75,7 @@ def upload():
     else:
         up_file = request.files['audio_file']
         filename = secure_filename(up_file.filename)
+        INPUT_AUDIO_EXT = getFileExtension(filename) 
         upload_filename = 'x'+ filename
         if not saveUploadedFile(up_file, upload_filename):
             response = REQUEST_FAIL
@@ -110,6 +112,15 @@ def downloadAudioFileList():
 def fileExists(folder, fileName):
     exists = os.path.exists(request.host_url + folder +'/' + fileName)
     return exists
+
+def getFileExtension(fileName = "sample.flac"):
+    extension = ''
+    arr_ext = fileName.split('.')
+
+    if len(arr_ext)==2:
+        extension = arr_ext[1]
+    
+    return extension
 
 if __name__ == '__main__':
     # app.run(debug=True)
