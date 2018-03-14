@@ -63,6 +63,29 @@ def index():
             response['error'] = 'Unable to download file from Server.'
     return jsonify(response)
 
+@app.route('/audio_file',methods=['GET'])
+def getAudioFile():
+    response = REQUEST_SUCCESS
+    fileName = request.args['audio_file_name']
+    fileName = fileName.strip(' ') 
+    
+    if fileName == '':
+        response = REQUEST_FAIL
+    elif not fileExists(TEMP_FOLDER, fileName + '.' + AUDIO_EXTENSION):
+        aws = aws_bucket.AwsBucket()        
+        if not aws.downloadFile(fileName):
+            response = REQUEST_FAIL
+            response['error'] = 'Unable to download file from Server.'
+        else:
+            response = REQUEST_SUCCESS
+
+    if response['result'] == 1:
+        response['sound_url'] = request.host_url + TEMP_FOLDER +'/' + fileName + '.' + AUDIO_EXTENSION
+
+
+    return jsonify(response)
+
+
 @app.route('/upload',methods=['PUT'])
 @cross_origin(origin='*')
 def upload():
@@ -82,7 +105,7 @@ def upload():
             response['error'] = 'Upload fail.'
         elif not aws.downloadFile(filename.replace(INPUT_AUDIO_EXT,AUDIO_EXTENSION)):
             response = REQUEST_FAIL
-            response['error'] = 'Unable to download file from Server.'
+            response['error'] = 'No audio file for ' + filename.replace(INPUT_AUDIO_EXT,AUDIO_EXTENSION) + ' on server'
         elif not dtw.differntiateFile(filename.replace(INPUT_AUDIO_EXT,AUDIO_EXTENSION), upload_filename):
             response = REQUEST_FAIL
             response['error'] = 'Unable to compare at the moment.'

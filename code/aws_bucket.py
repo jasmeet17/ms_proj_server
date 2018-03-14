@@ -57,19 +57,17 @@ class AwsBucket(object):
 
         if key.strip()=='':
             return downloaded
+        elif not AUDIO_EXTENSIONS in key:
+            key = key + '.flac'
         try:
             self.__my_bucket.download_file(AUDIO_FOLDER + key, TEMP_FOLDER + key)
             downloaded = True
         except botocore.exceptions.ClientError as e:
             downloaded = False
             if e.response['Error']['Code'] == "NoSuchKey":
-                # logger.debug("The object does not exist. e:" + e)
-                pass
+                downloaded = False
             else:
                 pass
-                # logger.debug(e.response['Error'])
-                # return downloaded
-            return e
 
         return downloaded
 

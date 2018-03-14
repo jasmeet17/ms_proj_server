@@ -9,8 +9,8 @@ import sys
 TEMP_FOLDER = 'static/tmp/'
 EXTENSION_IMAGES ='png'
 
-arg_real_file = 'ability.flac'
-arg_user_input_file = 'ability.flac'
+arg_real_file = 'benefit.m4a'
+arg_user_input_file = 'benefit.flac'
 
 class DTW(object):
 
@@ -23,9 +23,14 @@ class DTW(object):
         y, sr = librosa.load(TEMP_FOLDER + real_file)
         sound_1 = librosa.feature.mfcc(y=y, sr=sr)
 
+        # print('REAL sirial no: :',sr)
+        # print('Shape original :',y.shape)
 
-        y, sr = librosa.load(TEMP_FOLDER + user_input_file)# + "." + input_file_format)
+        y, sr = librosa.load(TEMP_FOLDER + user_input_file)
         sound_2 = librosa.feature.mfcc(y=y, sr=sr)
+
+        # print('INPUT sirial no: :',sr)
+        # print('Shape input:',y.shape)
 
         fig_name = user_input_file.split(".")[0]
         return self.plotAndSave(sound_1, sound_2, fig_name, EXTENSION_IMAGES)
@@ -35,6 +40,8 @@ class DTW(object):
         status = False
         try:
             D, wp = librosa.dtw(Y, Z, subseq=True)
+            [N,M] = D.shape
+            print(D[N-1,M-1])
             plt.figure(fig_name)
             plt.subplot(2, 1, 1)
             librosa.display.specshow(D, x_axis='frames', y_axis='frames')
@@ -55,12 +62,27 @@ class DTW(object):
         return status
 
 
-
+files= ['benefit','estimate','factor','specific','theory']
+# files= ['benefit']
 
 if __name__ == '__main__':
     dtw = DTW()
     if len(sys.argv)==3:
         arg_real_file = sys.argv[1]
         arg_user_input_file = sys.argv[2]
-    dtw.differntiateFile()
+    
+    for audio_file in files:
+        print('File name :',audio_file)
+        dtw.differntiateFile(audio_file+'.flac', audio_file+'.m4a')
+    
+    # print('benefit.m4a','estimate.m4a')
+    # dtw.differntiateFile('benefit.m4a','estimate.m4a')
+    # print('estimate.m4a','factor.m4a')
+    # dtw.differntiateFile('estimate.m4a','factor.m4a')
+    # print('factor.m4a','specific.m4a')
+    # dtw.differntiateFile('factor.m4a','specific.m4a')
+    # print('specific.m4a','theory.m4a')
+    # dtw.differntiateFile('specific.m4a','theory.m4a')
+    # print('theory.m4a','benefit.m4a')
+    # dtw.differntiateFile('theory.m4a','benefit.m4a')
 
