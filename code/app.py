@@ -18,6 +18,7 @@ import aws_bucket
 from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
+app.run(debug=True, port=33507)
 CORS(app)
 dtw = differentiate.DTW()
 
