@@ -4,7 +4,8 @@ import numpy as np
 import librosa
 import librosa.display
 import matplotlib.pyplot as plt
-import sys
+import sys, os
+
 
 TEMP_FOLDER = 'static/tmp/'
 EXTENSION_IMAGES ='png'
@@ -23,14 +24,14 @@ class DTW(object):
         y, sr = librosa.load(TEMP_FOLDER + real_file)
         sound_1 = librosa.feature.mfcc(y=y, sr=sr)
 
+        # print('Shape Y :',y.shape)
+        # print('Shape SOUND_1 :',sound_1.shape)
+
         # print('REAL sirial no: :',sr)
         # print('Shape original :',y.shape)
 
         y, sr = librosa.load(TEMP_FOLDER + user_input_file)
         sound_2 = librosa.feature.mfcc(y=y, sr=sr)
-
-        # print('INPUT sirial no: :',sr)
-        # print('Shape input:',y.shape)
 
         fig_name = user_input_file.split(".")[0]
         return self.plotAndSave(sound_1, sound_2, fig_name, EXTENSION_IMAGES)
@@ -38,6 +39,12 @@ class DTW(object):
     """Plot the difference between two sounds and save image showing comparison, return True if succssedful"""
     def plotAndSave(self, Y,Z,fig_name="compare", extension="png"):
         status = False
+        fig_name = fig_name + '.' + extension 
+        try:            
+            if self.fileExists(TEMP_FOLDER, fig_name):
+                os.remove(TEMP_FOLDER + fig_name)
+        except Exception as e:
+            print(e)
         try:
             D, wp = librosa.dtw(Y, Z, subseq=True)
             [N,M] = D.shape
@@ -53,7 +60,8 @@ class DTW(object):
             plt.ylim([0, 2])
             plt.title('Matching cost function')
             plt.tight_layout()
-            plt.savefig(TEMP_FOLDER + fig_name + '.' + extension)
+            plt.savefig(TEMP_FOLDER + fig_name)
+            plt.clf()
             status = True
         except Exception as e:
             print('Plotting failed.')
@@ -61,6 +69,9 @@ class DTW(object):
 
         return status
 
+    def fileExists(self, folder, fileName):
+        exists = os.path.isfile(folder+fileName)
+        return exists
 
 files= ['benefit','estimate','factor','specific','theory']
 # files= ['benefit']
@@ -70,10 +81,10 @@ if __name__ == '__main__':
     if len(sys.argv)==3:
         arg_real_file = sys.argv[1]
         arg_user_input_file = sys.argv[2]
-    
-    for audio_file in files:
-        print('File name :',audio_file)
-        dtw.differntiateFile(audio_file+'.flac', audio_file+'.m4a')
+    dtw.differntiateFile()
+    # for audio_file in files:
+    #     print('File name :',audio_file)
+    #     dtw.differntiateFile(audio_file+'.flac', audio_file+'.m4a')
     
     # print('benefit.m4a','estimate.m4a')
     # dtw.differntiateFile('benefit.m4a','estimate.m4a')
