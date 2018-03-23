@@ -20,21 +20,28 @@ class DTW(object):
         super(DTW, self).__init__()
 
     """Differntiate 2 flac(audio) files"""
-    def differntiateFile(self, real_file=arg_real_file, user_input_file=arg_user_input_file, input_file_format="flac"):
+    def differntiateFile(self, real_file=arg_real_file, user_input_file=arg_user_input_file, input_file_format="flac",DTW_SCORE=False):
         y, sr = librosa.load(TEMP_FOLDER + real_file)
         sound_1 = librosa.feature.mfcc(y=y, sr=sr)
-
-        # print('Shape Y :',y.shape)
-        # print('Shape SOUND_1 :',sound_1.shape)
-
-        # print('REAL sirial no: :',sr)
-        # print('Shape original :',y.shape)
+        # sound_1 = librosa.feature.chroma_stft(y=y, sr=sr)
 
         y, sr = librosa.load(TEMP_FOLDER + user_input_file)
         sound_2 = librosa.feature.mfcc(y=y, sr=sr)
+        # sound_2 = librosa.feature.chroma_stft(y=y, sr=sr)
 
-        fig_name = user_input_file.split(".")[0]
-        return self.plotAndSave(sound_1, sound_2, fig_name, EXTENSION_IMAGES)
+        if DTW_SCORE:
+            score = self.getDTWScore(sound_1, sound_2)
+            score = int(round(score))
+            return score
+        else:
+            fig_name = user_input_file.split(".")[0]
+            return self.plotAndSave(sound_1, sound_2, fig_name, EXTENSION_IMAGES)
+
+    """ returns DTW score given feature objects"""
+    def getDTWScore(self, Y, Z):
+        D, _ = librosa.dtw(Y, Z, subseq=True)
+        [N,M] = D.shape
+        return D[N-1,M-1]
 
     """Plot the difference between two sounds and save image showing comparison, return True if succssedful"""
     def plotAndSave(self, Y,Z,fig_name="compare", extension="png"):
@@ -48,7 +55,7 @@ class DTW(object):
         try:
             D, wp = librosa.dtw(Y, Z, subseq=True)
             [N,M] = D.shape
-            print(D[N-1,M-1])
+            # print(D[N-1,M-1])
             plt.figure(fig_name)
             plt.subplot(2, 1, 1)
             librosa.display.specshow(D, x_axis='frames', y_axis='frames')
@@ -74,17 +81,18 @@ class DTW(object):
         return exists
 
 files= ['benefit','estimate','factor','specific','theory']
-# files= ['benefit']
+# files= ['estimate']
 
 if __name__ == '__main__':
     dtw = DTW()
     if len(sys.argv)==3:
         arg_real_file = sys.argv[1]
         arg_user_input_file = sys.argv[2]
-    dtw.differntiateFile()
-    # for audio_file in files:
-    #     print('File name :',audio_file)
-    #     dtw.differntiateFile(audio_file+'.flac', audio_file+'.m4a')
+    # dtw.differntiateFile()
+    for audio_file in files:
+        # print('File name :',audio_file)
+        dtw.differntiateFile(audio_file+'.flac', audio_file+'.m4a')
+        # print("=====================================")
     
     # print('benefit.m4a','estimate.m4a')
     # dtw.differntiateFile('benefit.m4a','estimate.m4a')

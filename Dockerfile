@@ -32,9 +32,9 @@ EXPOSE 5000
 
 # run CMD based on flags for development
 CMD sh -c 'if [ "$LIBROSA_TEST"=true ]; then python3 $APP_NAME $FILE_1 $FILE_2; fi'
-CMD sh -c 'if [ "$API_TEST"=true ]; then export FLASK_DEBUG=1; fi'
-CMD sh -c 'if [ "$API_TEST"=true ]; then python3 $APP_NAME; fi'
-
+# CMD sh -c 'if [ "$API_TEST"=true ]; then export FLASK_DEBUG=1; fi'
+# CMD sh -c 'if [ "$API_TEST"=true ]; then python3 $APP_NAME; fi'
+# CMD sh -c 'python3 $APP_NAME;'
 
 #docker run --rm -e LIBROSA_TEST=true -e APP_NAME=differentiate.py -v $(pwd)/code:/data/:rw python-sound
 #docker run --rm -e API_TEST=true -e APP_NAME=app.py -v $(pwd)/code:/data/:rw python-sound-test

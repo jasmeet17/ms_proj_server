@@ -18,7 +18,7 @@ import aws_bucket
 from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
-app.run(debug=True, port=33507)
+# app.run(debug=True, port=33507)
 CORS(app)
 dtw = differentiate.DTW()
 
@@ -116,6 +116,34 @@ def upload():
             response['image_url'] = request.host_url + TEMP_FOLDER +'/' + fig_image +'.png'
 
     return jsonify(response)
+
+@app.route('/dtwScore',methods=['PUT'])
+@cross_origin(origin='*')
+def dtwScore():
+    aws = aws_bucket.AwsBucket()
+    response = {}
+
+    if not request.files:
+        response = REQUEST_FAIL
+        response['error'] = "Audio file not found."
+    else:
+        up_file = request.files['audio_file']
+        filename = secure_filename(up_file.filename)
+        INPUT_AUDIO_EXT = getFileExtension(filename) 
+        upload_filename = 'x'+ filename
+        if not saveUploadedFile(up_file, upload_filename):
+            response = REQUEST_FAIL
+            response['error'] = 'Upload fail.'
+        elif not aws.downloadFile(filename.replace(INPUT_AUDIO_EXT,AUDIO_EXTENSION)):
+            response = REQUEST_FAIL
+            response['error'] = 'No audio file for ' + filename.replace(INPUT_AUDIO_EXT,AUDIO_EXTENSION) + ' on server'
+        else:
+            score = dtw.differntiateFile(filename.replace(INPUT_AUDIO_EXT,AUDIO_EXTENSION), upload_filename, DTW_SCORE = True) 
+            response = REQUEST_SUCCESS
+            response['dtw_score'] = score
+
+    return jsonify(response)
+
 
 def saveUploadedFile(up_file, filename):
     saved_status = False
